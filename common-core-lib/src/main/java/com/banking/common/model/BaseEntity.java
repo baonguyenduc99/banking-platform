@@ -1,4 +1,4 @@
-package com.banking.common.domain;
+package com.banking.common.model;
 
 
 import jakarta.persistence.Column;
@@ -23,18 +23,19 @@ public abstract class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @LastModifiedBy
-    @Column(nullable = false)
+    @Column(name = "updated_at",nullable = false)
     private Instant updatedAt;
 
     @CreatedBy
-    @Column(updatable = false)
+    @Column(name = "created_by_id",updatable = false)
     private UUID createdById;
 
     @LastModifiedBy
+    @Column(name = "updated_by_id")
     private UUID updatedById;
 
 }

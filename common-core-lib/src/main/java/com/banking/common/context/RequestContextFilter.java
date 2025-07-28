@@ -1,5 +1,6 @@
 package com.banking.common.context;
 
+import com.banking.common.constants.HeaderConstants;
 import com.banking.common.utils.RequestContextUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,13 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class RequestContextFilter extends OncePerRequestFilter {
 
-    private static final String HEADER_USER_ID = "X-User-Id";
-    private static final String HEADER_USERNAME = "X-Username";
-    private static final String HEADER_ROLES = "X-Roles";
-    private static final String HEADER_EMAIL = "X-User-Email";
-    private static final String HEADER_TOKEN_ID = "X-JTI";
-    private static final String HEADER_REQUEST_ID = "X-Request-ID";
-    private static final String HEADER_CORRELATION_ID = "X-Correlation-ID";
 
 
     @Override
@@ -31,16 +25,16 @@ public class RequestContextFilter extends OncePerRequestFilter {
 
         try {
             RequestContext context = RequestContext.builder()
-                    .userId(RequestContextUtils.safeParseUUID(request.getHeader(HEADER_USER_ID)))
-                    .userName(request.getHeader(HEADER_USERNAME))
-                    .email(StringUtils.trimToNull(request.getHeader(HEADER_EMAIL)))
-                    .roles(RequestContextUtils.parseRoles(request.getHeader(HEADER_ROLES)))
-                    .tokenId(StringUtils.trimToNull(request.getHeader(HEADER_TOKEN_ID)))
+                    .userId(RequestContextUtils.safeParseUUID(request.getHeader(HeaderConstants.HEADER_USER_ID)))
+                    .userName(request.getHeader(HeaderConstants.HEADER_USERNAME))
+                    .email(StringUtils.trimToNull(request.getHeader(HeaderConstants.HEADER_EMAIL)))
+                    .roles(RequestContextUtils.parseRoles(request.getHeader(HeaderConstants.HEADER_ROLES)))
+                    .tokenId(StringUtils.trimToNull(request.getHeader(HeaderConstants.HEADER_TOKEN_ID)))
                     .ipAddress(RequestContextUtils.resolveClientIp(request))
-                    .requestId(StringUtils.defaultIfBlank(request.getHeader(HEADER_REQUEST_ID),
+                    .requestId(StringUtils.defaultIfBlank(request.getHeader(HeaderConstants.HEADER_REQUEST_ID),
                             UUID.randomUUID().toString()))
                     .correlationId(
-                            StringUtils.defaultIfBlank(request.getHeader(HEADER_CORRELATION_ID),
+                            StringUtils.defaultIfBlank(request.getHeader(HeaderConstants.HEADER_CORRELATION_ID),
                                     UUID.randomUUID().toString())).build();
 
             RequestContextHolder.setContext(context);

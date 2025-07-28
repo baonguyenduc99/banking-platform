@@ -11,7 +11,7 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RequestContextUtils {
+public final class RequestContextUtils {
 
     private static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
 
