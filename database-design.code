@@ -1,0 +1,453 @@
+// title
+title Microservices Banking System Data Model
+
+// Auth Service
+users [icon: user, color: yellow]{
+  id uuid pk
+  username string unique
+  email string unique
+  password_hash string
+  is_active boolean default:true
+  last_login timestamp
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  version integer default
+  tenant_id uuid
+}
+
+roles [icon: shield, color: orange]{
+  id uuid pk
+  name string unique
+  description string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+permissions [icon: lock, color: orange]{
+  id uuid pk
+  name string unique
+  description string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+user_roles [icon: users, color: yellow]{
+  id uuid pk
+  user_id uuid
+  role_id uuid
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+role_permissions [icon: key, color: orange]{
+  id uuid pk
+  role_id uuid
+  permission_id uuid
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+// Customer Service
+customers [icon: user-check, color: green]{
+  id uuid pk
+  user_id uuid unique
+  first_name string
+  last_name string
+  dob date
+  gender string
+  status string
+  kyc_status string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  gender_enum_id uuid
+  status_enum_id uuid
+  kyc_status_enum_id uuid
+  tenant_id uuid
+}
+
+customer_contacts [icon: phone, color: green]{
+  id uuid pk
+  customer_id uuid
+  type string
+  value string
+  is_primary boolean default:false
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+customer_addresses [icon: map-pin, color: green]{
+  id uuid pk
+  customer_id uuid
+  address_line1 string
+  address_line2 string
+  city string
+  state string
+  postal_code string
+  country string
+  is_primary boolean default:false
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+kyc_documents [icon: file-text, color: green]{
+  id uuid pk
+  customer_id uuid
+  document_type string
+  document_number string
+  issue_date date
+  expiry_date date
+  file_url string
+  status string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+  document_unique_hash string unique
+  document_type_enum_id uuid
+}
+
+// Account Service
+accounts [icon: credit-card, color: blue]{
+  id uuid pk
+  account_number string unique
+  customer_id uuid
+  account_type_id uuid
+  balance decimal(18,2) default:0.00
+  currency string
+  status string
+  opened_at timestamp
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  version integer default
+  closed_at timestamp
+  last_transaction_at timestamp
+  last_transaction_id uuid
+  opened_by uuid
+  opened_comment string
+  account_nickname string
+  overdraft_limit decimal(18,2) default
+  interest_rate decimal(5,4)
+  last_balance decimal(18,2)
+  last_balance_at timestamp
+  last_balance_by uuid
+  last_balance_reason string
+  last_balance_comment string
+  last_audit_at timestamp
+  last_audit_by uuid
+  last_audit_comment string
+  status_enum_id uuid
+  currency_enum_id uuid
+  tenant_id uuid
+}
+
+account_types [icon: list, color: blue]{
+  id uuid pk
+  name string unique
+  description string
+  min_balance decimal(18,2)
+  max_balance decimal(18,2)
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+}
+
+account_holders [icon: users, color: blue]{
+  id uuid pk
+  account_id uuid
+  customer_id uuid
+  holder_type string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+// Transaction Service
+transactions [icon: repeat, color: purple]{
+  id uuid pk
+  account_id uuid
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  version integer default
+  exported
+  status_enum_id uuid
+  type_enum_id uuid
+  tenant_id uuid
+}
+
+transaction_ledger_entries [icon: book, color: purple]{
+  id uuid pk
+  transaction_id uuid
+  ledger_entry_id uuid
+  amount decimal(18,2)
+  entry_type string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+// Ledger Service
+ledgers [icon: book-open, color: red]{
+  id uuid pk
+  name string unique
+  description string
+  currency string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+ledger_entries [icon: file, color: red]{
+  id uuid pk
+  ledger_id uuid
+  account_id uuid
+  transaction_id uuid
+  entry_type string
+  amount decimal(18,2)
+  entry_date timestamp
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+// Notification Service
+notifications [icon: bell, color: pink]{
+  id uuid pk
+  customer_id uuid
+  type string
+  channel string
+  status string
+  sent_at timestamp
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  channel_enum_id uuid
+  type_enum_id uuid
+  template_id uuid
+  template_data json
+  tenant_id uuid
+}
+
+// Audit Service
+audit_logs [icon: activity, color: gray]{
+  id uuid pk
+  user_id uuid
+  action string
+  entity string
+  entity_id uuid
+  details string
+  ip_address string
+  user_agent string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+  before_state json
+  after_state json
+  diff json
+}
+
+// FX Service
+currencies [icon: dollar-sign, color: teal]{
+  id uuid pk
+  code string unique
+  name string
+  symbol string
+  is_active boolean default:true
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+}
+
+fx_rates [icon: trending-up, color: teal]{
+  id uuid pk
+  base_currency_id uuid
+  target_currency_id uuid
+  rate decimal(18,8)
+  effective_date date
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+// Report Service
+reports [icon: file-text, color: indigo]{
+  id uuid pk
+  customer_id uuid
+  type string
+  status string
+  generated_at timestamp
+  file_url string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+  tenant_id uuid
+}
+
+// Tenant Provisioning Service
+tenants [icon: server, color: brown]{
+  id uuid pk
+  name string unique
+  db_host string
+  db_name string
+  db_user string
+  db_encrypted_password string
+  status string
+  created_at timestamp default:now()
+  updated_at timestamp default:now()
+  is_deleted boolean default:false
+}
+transaction_events [icon: activity, color: purple] {
+
+  id uuid pk
+  transaction_id uuid
+  event_type string
+  event_status string
+  event_at timestamp
+  event_by uuid
+  event_reason string
+  event_comment string
+  before_state json
+  after_state json
+  created_at timestamp default
+  updated_at timestamp default
+  is_deleted boolean default
+}
+account_events [icon: activity, color: blue] {
+
+  id uuid pk
+  account_id uuid
+  event_type string
+  event_status string
+  event_at timestamp
+  event_by uuid
+  event_reason string
+  event_comment string
+  before_state json
+  after_state json
+  created_at timestamp default
+  updated_at timestamp default
+  is_deleted boolean default
+}
+enums [icon: list, color: gray] {
+
+  id uuid pk
+  name string unique
+  type string
+  value string
+  description string
+  is_active boolean default
+  created_at timestamp default
+  updated_at timestamp default
+  is_deleted boolean default
+}
+notification_templates [icon: file-text, color: pink] {
+
+  id uuid pk
+  name string unique
+  subject_template string
+  message_template string
+  created_at timestamp default
+  updated_at timestamp default
+  is_deleted boolean default
+}
+
+
+
+// --- RELATIONSHIPS ---
+
+// AUTH SERVICE
+Ref: user_roles.user_id > users.id
+Ref: user_roles.role_id > roles.id
+Ref: role_permissions.role_id > roles.id
+Ref: role_permissions.permission_id > permissions.id
+
+// CUSTOMER SERVICE
+Ref: customers.user_id > users.id
+Ref: customer_contacts.customer_id > customers.id
+Ref: customer_addresses.customer_id > customers.id
+Ref: kyc_documents.customer_id > customers.id
+
+// ACCOUNT SERVICE
+Ref: accounts.customer_id > customers.id
+Ref: accounts.account_type_id > account_types.id
+Ref: account_holders.account_id > accounts.id
+Ref: account_holders.customer_id > customers.id
+
+// TRANSACTION SERVICE
+Ref: transactions.account_id > accounts.id
+Ref: transaction_ledger_entries.transaction_id > transactions.id
+Ref: transaction_ledger_entries.ledger_entry_id > ledger_entries.id
+
+// LEDGER SERVICE
+Ref: ledger_entries.ledger_id > ledgers.id
+Ref: ledger_entries.account_id > accounts.id
+Ref: ledger_entries.transaction_id > transactions.id
+
+// NOTIFICATION SERVICE
+Ref: notifications.customer_id > customers.id
+Ref: notifications.channel_enum_id > enums.id
+Ref: notifications.type_enum_id > enums.id
+Ref: notifications.template_id > notification_templates.id
+
+// AUDIT SERVICE
+Ref: audit_logs.user_id > users.id
+
+// FX SERVICE
+Ref: fx_rates.base_currency_id > currencies.id
+Ref: fx_rates.target_currency_id > currencies.id
+
+// REPORT SERVICE
+Ref: reports.customer_id > customers.id
+
+// EVENTS
+Ref: transaction_events.transaction_id > transactions.id
+Ref: account_events.account_id > accounts.id
+
+Ref: customers.gender_enum_id > enums.id
+Ref: customers.status_enum_id > enums.id
+Ref: customers.kyc_status_enum_id > enums.id
+Ref: accounts.status_enum_id > enums.id
+Ref: accounts.currency_enum_id > enums.id
+Ref: transactions.status_enum_id > enums.id
+Ref: transactions.type_enum_id > enums.id
+Ref: kyc_documents.document_type_enum_id > enums.id
+
+Ref: customers.tenant_id > tenants.id
+Ref: accounts.tenant_id > tenants.id
+Ref: transactions.tenant_id > tenants.id
+Ref: account_holders.tenant_id > tenants.id
+Ref: customer_contacts.tenant_id > tenants.id
+Ref: customer_addresses.tenant_id > tenants.id
+Ref: kyc_documents.tenant_id > tenants.id
+Ref: audit_logs.tenant_id > tenants.id
+Ref: reports.tenant_id > tenants.id
+Ref: ledgers.tenant_id > tenants.id
+Ref: ledger_entries.tenant_id > tenants.id
+Ref: transaction_ledger_entries.tenant_id > tenants.id
+Ref: fx_rates.tenant_id > tenants.id
+Ref: users.tenant_id > tenants.id
+Ref: roles.tenant_id > tenants.id
+Ref: permissions.tenant_id > tenants.id
+Ref: user_roles.tenant_id > tenants.id
+Ref: role_permissions.tenant_id > tenants.id
+Ref: notifications.tenant_id > tenants.id

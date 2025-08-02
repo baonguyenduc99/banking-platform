@@ -1,0 +1,480 @@
+// Microservices Banking System Data Model - Full Best Practice
+
+// --- AUTH SERVICE ---
+Table users [icon: "user", color: "yellow"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  username varchar(50) [unique, not null]
+  email varchar(100) [unique, not null]
+  password_hash varchar(255) [not null]
+  is_active boolean [default: true, not null]
+  last_login timestamp
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  version integer [default: 1, not null]
+  tenant_id uuid [not null]
+}
+
+Table roles [icon: "shield", color: "orange"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(50) [unique, not null]
+  description varchar(255)
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table permissions [icon: "lock", color: "orange"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(50) [unique, not null]
+  description varchar(255)
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table user_roles [icon: "users", color: "yellow"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  role_id uuid [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+  indexes {
+    (user_id, role_id) [unique]
+  }
+}
+
+Table role_permissions [icon: "key", color: "orange"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  role_id uuid [not null]
+  permission_id uuid [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+  indexes {
+    (role_id, permission_id) [unique]
+  }
+}
+
+// --- CUSTOMER SERVICE ---
+Table customers [icon: "user-check", color: "green"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [unique, not null]
+  first_name varchar(50) [not null]
+  last_name varchar(50) [not null]
+  dob date [not null]
+  gender_enum_id uuid [not null]
+  status_enum_id uuid [not null]
+  kyc_status_enum_id uuid [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table customer_contacts [icon: "phone", color: "green"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  customer_id uuid [not null]
+  type varchar(20) [not null]
+  value varchar(100) [not null]
+  is_primary boolean [default: false, not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+  indexes {
+    (customer_id, type, value) [unique]
+  }
+}
+
+Table customer_addresses [icon: "map-pin", color: "green"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  customer_id uuid [not null]
+  address_line1 varchar(255) [not null]
+  address_line2 varchar(255)
+  city varchar(100)
+  state varchar(100)
+  postal_code varchar(20)
+  country varchar(100)
+  is_primary boolean [default: false, not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table kyc_documents [icon: "file-text", color: "green"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  customer_id uuid [not null]
+  document_type varchar(50) [not null]
+  document_number varchar(100) [not null]
+  issue_date date
+  expiry_date date
+  file_url varchar(255)
+  status varchar(50)
+  document_unique_hash varchar(255) [unique, not null]
+  document_type_enum_id uuid [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+// --- ACCOUNT SERVICE ---
+Table accounts [icon: "credit-card", color: "blue"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  account_number varchar(50) [unique, not null]
+  customer_id uuid [not null]
+  account_type_id uuid [not null]
+  balance decimal(18,2) [default: 0.00, not null]
+  currency_enum_id uuid [not null]
+  status_enum_id uuid [not null]
+  opened_at timestamp [default: now()]
+  closed_at timestamp
+  last_transaction_id uuid
+  last_transaction_at timestamp
+  opened_by uuid
+  opened_comment varchar(255)
+  account_nickname varchar(100)
+  overdraft_limit decimal(18,2) [default: 0.00]
+  interest_rate decimal(5,4)
+  last_balance decimal(18,2)
+  last_balance_at timestamp
+  last_balance_by uuid
+  last_balance_reason varchar(255)
+  last_balance_comment varchar(255)
+  last_audit_at timestamp
+  last_audit_by uuid
+  last_audit_comment varchar(255)
+  version integer [default: 1, not null]
+  is_deleted boolean [default: false, not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  tenant_id uuid [not null]
+}
+
+Table account_types [icon: "list", color: "blue"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(50) [unique, not null]
+  description varchar(255)
+  min_balance decimal(18,2)
+  max_balance decimal(18,2)
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+}
+
+Table account_holders [icon: "users", color: "blue"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  account_id uuid [not null]
+  customer_id uuid [not null]
+  holder_type varchar(30) [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+  indexes {
+    (account_id, customer_id) [unique]
+  }
+}
+
+// --- TRANSACTION SERVICE ---
+Table transactions [icon: "repeat", color: "purple"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  account_id uuid [not null]
+  amount decimal(18,2) [not null]
+  currency varchar(10) [not null]
+  status_enum_id uuid [not null]
+  type_enum_id uuid [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  version integer [default: 1, not null]
+  exported boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table transaction_ledger_entries [icon: "book", color: "purple"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  transaction_id uuid [not null]
+  ledger_entry_id uuid [not null]
+  amount decimal(18,2) [not null]
+  entry_type varchar(10) [not null]
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+// --- LEDGER SERVICE ---
+Table ledgers [icon: "book-open", color: "red"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(100) [unique, not null]
+  description varchar(255)
+  currency varchar(10)
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table ledger_entries [icon: "file", color: "red"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  ledger_id uuid [not null]
+  account_id uuid [not null]
+  transaction_id uuid [not null]
+  entry_type varchar(10) [not null]
+  amount decimal(18,2) [not null]
+  entry_date timestamp [default: now(), not null]
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+// --- NOTIFICATION SERVICE ---
+Table notifications [icon: "bell", color: "pink"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  customer_id uuid [not null]
+  type_enum_id uuid [not null]
+  channel_enum_id uuid [not null]
+  status varchar(50)
+  sent_at timestamp
+  template_id uuid [not null]
+  template_data jsonb
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+Table notification_templates [icon: "file-text", color: "pink"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(100) [unique, not null]
+  subject_template varchar(255) [not null]
+  message_template text [not null]
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+}
+
+// --- AUDIT SERVICE ---
+Table audit_logs [icon: "activity", color: "gray"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  action varchar(50) [not null]
+  entity varchar(100) [not null]
+  entity_id uuid [not null]
+  details text
+  ip_address varchar(50)
+  user_agent varchar(255)
+  before_state jsonb
+  after_state jsonb
+  diff jsonb
+  created_at timestamp [default: now(), not null]
+  updated_at timestamp [default: now(), not null]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+// --- FX SERVICE ---
+Table currencies [icon: "dollar-sign", color: "teal"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  code varchar(10) [unique, not null]
+  name varchar(50) [not null]
+  symbol varchar(10)
+  is_active boolean [default: true, not null]
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+}
+
+Table fx_rates [icon: "trending-up", color: "teal"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  base_currency_id uuid [not null]
+  target_currency_id uuid [not null]
+  rate decimal(18,8) [not null]
+  effective_date date [not null]
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+  indexes {
+    (base_currency_id, target_currency_id, effective_date) [unique]
+  }
+}
+
+// --- REPORT SERVICE ---
+Table reports [icon: "file-text", color: "indigo"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  customer_id uuid [not null]
+  type varchar(50) [not null]
+  status varchar(50)
+  generated_at timestamp
+  file_url varchar(255)
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+  tenant_id uuid [not null]
+}
+
+// --- TENANT PROVISIONING ---
+Table tenants [icon: "server", color: "brown"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(100) [unique, not null]
+  db_host varchar(100) [not null]
+  db_name varchar(100) [not null]
+  db_user varchar(100) [not null]
+  db_encrypted_password varchar(255) [not null]
+  status varchar(50) [not null]
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+}
+
+// --- EVENTS ---
+Table transaction_events [icon: "activity", color: "purple"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  transaction_id uuid [not null]
+  event_type varchar(50) [not null]
+  event_status varchar(50)
+  event_at timestamp [default: now(), not null]
+  event_by uuid
+  event_reason varchar(255)
+  event_comment varchar(255)
+  before_state jsonb
+  after_state jsonb
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+}
+
+Table account_events [icon: "activity", color: "blue"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  account_id uuid [not null]
+  event_type varchar(50) [not null]
+  event_status varchar(50)
+  event_at timestamp [default: now(), not null]
+  event_by uuid
+  event_reason varchar(255)
+  event_comment varchar(255)
+  before_state jsonb
+  after_state jsonb
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+}
+
+// --- ENUMS ---
+Table enums [icon: "list", color: "gray"] {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(100) [unique, not null]
+  type varchar(50) [not null]
+  value varchar(100) [not null]
+  description varchar(255)
+  is_active boolean [default: true, not null]
+  created_at timestamp [default: now()]
+  updated_at timestamp [default: now()]
+  is_deleted boolean [default: false, not null]
+  indexes {
+    (type, value) [unique]
+  }
+}
+
+notification_templates [icon: file-text, color: pink] {
+
+  id uuid pk
+  name string unique
+  subject_template string
+  message_template string
+  created_at timestamp default
+  updated_at timestamp default
+  is_deleted boolean default
+}
+
+
+
+
+
+// --- RELATIONSHIPS ---
+
+// AUTH SERVICE
+Ref: user_roles.user_id > users.id
+Ref: user_roles.role_id > roles.id
+Ref: role_permissions.role_id > roles.id
+Ref: role_permissions.permission_id > permissions.id
+
+// CUSTOMER SERVICE
+Ref: customers.user_id > users.id
+Ref: customer_contacts.customer_id > customers.id
+Ref: customer_addresses.customer_id > customers.id
+Ref: kyc_documents.customer_id > customers.id
+
+// ACCOUNT SERVICE
+Ref: accounts.customer_id > customers.id
+Ref: accounts.account_type_id > account_types.id
+Ref: account_holders.account_id > accounts.id
+Ref: account_holders.customer_id > customers.id
+
+// TRANSACTION SERVICE
+Ref: transactions.account_id > accounts.id
+Ref: transaction_ledger_entries.transaction_id > transactions.id
+Ref: transaction_ledger_entries.ledger_entry_id > ledger_entries.id
+
+// LEDGER SERVICE
+Ref: ledger_entries.ledger_id > ledgers.id
+Ref: ledger_entries.account_id > accounts.id
+Ref: ledger_entries.transaction_id > transactions.id
+
+// NOTIFICATION SERVICE
+Ref: notifications.customer_id > customers.id
+Ref: notifications.channel_enum_id > enums.id
+Ref: notifications.type_enum_id > enums.id
+Ref: notifications.template_id > notification_templates.id
+
+// AUDIT SERVICE
+Ref: audit_logs.user_id > users.id
+
+// FX SERVICE
+Ref: fx_rates.base_currency_id > currencies.id
+Ref: fx_rates.target_currency_id > currencies.id
+
+// REPORT SERVICE
+Ref: reports.customer_id > customers.id
+
+// EVENTS
+Ref: transaction_events.transaction_id > transactions.id
+Ref: account_events.account_id > accounts.id
+
+Ref: customers.gender_enum_id > enums.id
+Ref: customers.status_enum_id > enums.id
+Ref: customers.kyc_status_enum_id > enums.id
+Ref: accounts.status_enum_id > enums.id
+Ref: accounts.currency_enum_id > enums.id
+Ref: transactions.status_enum_id > enums.id
+Ref: transactions.type_enum_id > enums.id
+Ref: kyc_documents.document_type_enum_id > enums.id
+
+Ref: customers.tenant_id > tenants.id
+Ref: accounts.tenant_id > tenants.id
+Ref: transactions.tenant_id > tenants.id
+Ref: account_holders.tenant_id > tenants.id
+Ref: customer_contacts.tenant_id > tenants.id
+Ref: customer_addresses.tenant_id > tenants.id
+Ref: kyc_documents.tenant_id > tenants.id
+Ref: audit_logs.tenant_id > tenants.id
+Ref: reports.tenant_id > tenants.id
+Ref: ledgers.tenant_id > tenants.id
+Ref: ledger_entries.tenant_id > tenants.id
+Ref: transaction_ledger_entries.tenant_id > tenants.id
+Ref: fx_rates.tenant_id > tenants.id
+Ref: users.tenant_id > tenants.id
+Ref: roles.tenant_id > tenants.id
+Ref: permissions.tenant_id > tenants.id
+Ref: user_roles.tenant_id > tenants.id
+Ref: role_permissions.tenant_id > tenants.id
+Ref: notifications.tenant_id > tenants.id

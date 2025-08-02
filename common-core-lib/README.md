@@ -24,7 +24,7 @@ It is used by services such as:
 ## 📦 Included Components
 
 ### 🛡️ Exception Handling
-- `ApiException`: Base class for structured error handling
+- `CoreException`: Base class for structured error handling
 - `ErrorCode`: Enum of all system/business error codes
 - `ErrorResponse`: Standardized response body with `code`, `message`, `path`, `correlationId`
 - `GlobalExceptionHandler`: Central handler with i18n support
@@ -46,7 +46,7 @@ It is used by services such as:
 - `JpaAuditConfig`: Enables `@CreatedBy`, `@LastModifiedBy`, etc.
 
 ### ⚙️ Utility Classes
-- `JsonUtils`: Safe (de)serialization with fallback to `ApiException`
+- `JsonUtils`: Safe (de)serialization with fallback to `CoreException`
 - `DateTimeUtils`: Time conversion and formatting helpers
 - `RegexConstants`: Centralized regex patterns for validation (email, phone, password, etc.)
 - `HeaderConstants`: Standard HTTP header names used across services

@@ -24,8 +24,8 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, HttpServletRequest request, Locale locale){
+    @ExceptionHandler(CoreException.class)
+    public ResponseEntity<ErrorResponse> handleCoreException(CoreException ex, HttpServletRequest request, Locale locale){
        return buildErrorResponse(ex.getErrorCode(), request, locale, ex, false);
     }
 

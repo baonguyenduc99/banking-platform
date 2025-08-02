@@ -18,6 +18,11 @@ public enum ErrorCode {
     AUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED),
     AUTH_ACCOUNT_LOCKED(HttpStatus.FORBIDDEN),
     AUTH_TOO_MANY_ATTEMPTS(HttpStatus.TOO_MANY_REQUESTS),
+    AUTH_MFA_REQUIRED(HttpStatus.UNAUTHORIZED),
+    AUTH_PASSWORD_EXPIRED(HttpStatus.FORBIDDEN),
+    SECURITY_IP_BLOCKED(HttpStatus.FORBIDDEN),
+    AUTH_MFA_INVALID(HttpStatus.UNAUTHORIZED),
+    AUTH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED),
 
     ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND),
     ACCOUNT_LOCKED(HttpStatus.FORBIDDEN),
@@ -62,7 +67,7 @@ public enum ErrorCode {
     private final HttpStatus httpStatus;
 
     ErrorCode(HttpStatus httpStatus) {
-        this.httpStatus = HttpStatus.BAD_REQUEST;
+        this.httpStatus = httpStatus;
     }
 
     public String code() {

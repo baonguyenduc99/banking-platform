@@ -1,6 +1,6 @@
 package com.banking.common.utils;
 
-import com.banking.common.exception.ApiException;
+import com.banking.common.exception.CoreException;
 import com.banking.common.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ public final class JsonUtils {
         try {
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new ApiException(ErrorCode.JSON_SERIALIZATION_ERROR, "Failed to serialize object to JSON",
+            throw new CoreException(ErrorCode.JSON_SERIALIZATION_ERROR, "Failed to serialize object to JSON",
                     e);
         }
     }
@@ -25,7 +25,7 @@ public final class JsonUtils {
         try {
             return mapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
-            throw new ApiException(ErrorCode.JSON_DESERIALIZATION_FAILED, "Failed to deserialize JSON to "+clazz.getSimpleName() ,e);
+            throw new CoreException(ErrorCode.JSON_DESERIALIZATION_FAILED, "Failed to deserialize JSON to "+clazz.getSimpleName() ,e);
         }
     }
 

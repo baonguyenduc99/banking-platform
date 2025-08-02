@@ -1,0 +1,52 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Postgres Monitoring
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+        labels:
+          service: 'banking-db'
+          domain: 'infrastructure'
+
+  # Redis Monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis_exporter:9121']
+        labels:
+          service: 'banking-cache'
+          domain: 'infrastructure'
+
+  # Kafka Monitoring
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka_exporter:7071']
+        labels:
+          service: 'banking-messaging'
+          domain: 'infrastructure'
+
+  # Vault Monitoring
+  - job_name: 'vault'
+    metrics_path: '/v1/sys/metrics'
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: ['vault:8200']
+        labels:
+          service: 'banking-secrets'
+          domain: 'security'
+
+  # Application Monitoring
+  - job_name: 'banking-apps'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8080', 'payment-service:8080']
+        labels:
+          domain: 'applications'
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

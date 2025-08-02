@@ -7,7 +7,7 @@
 
 	<groupId>com.banking</groupId>
 	<artifactId>auth-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>Banking Auth Service</name>
 	<description>Authentication and authorization module for banking platform</description>
 
@@ -129,12 +129,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
-
-		<!-- Spring Vault (Optional: Secure Secret Management) -->
-		<dependency>
-			<groupId>org.springframework.vault</groupId>
-			<artifactId>spring-vault-core</artifactId>
 		</dependency>
 
 		<!-- SpringDoc OpenAPI -->
