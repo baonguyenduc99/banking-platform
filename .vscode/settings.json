@@ -1,0 +1,12 @@
+{
+    // Enforce max 120 chars in Java code
+    "editor.rulers": [
+        120
+    ],
+    // For auto-formatting
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
+    // Use formatter that respects wrap (Red Hat Java extension + prettier-java or google-java-format)
+    "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+    "java.format.settings.profile": "GoogleStyle"
+}

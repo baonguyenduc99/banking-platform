@@ -2,3 +2,5 @@
 /banking-bom/.idea/checkstyle-idea.xml
 /banking-bom/.idea/jarRepositories.xml
 /banking-bom/.idea/misc.xml
+*.class
+/target/

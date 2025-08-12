@@ -1,9 +1,9 @@
-package com.banking.common.security.jwt;
+// package com.banking.common.security.jwt;
 
-import com.banking.common.security.JwtValidationResult;
+// import com.banking.common.security.JwtValidationResult;
 
-public interface JwtValidator {
+// public interface JwtValidator {
 
-    JwtValidationResult validationToken(String jwt);
+// JwtValidationResult validationToken(String jwt);
 
-}
+// }
