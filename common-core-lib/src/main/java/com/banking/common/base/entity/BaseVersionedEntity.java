@@ -5,17 +5,15 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * Base entity with optimistic locking for high-concurrency scenarios.
- * Use this for critical entities like accounts, transactions, balances.
+ * Base entity with optimistic locking for high-concurrency scenarios. Use this for critical
+ * entities like accounts, transactions, balances.
  * 
  * @author Banking Platform Team
  * @since 1.0.0
  */
 @Getter
-@Setter
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
 public class BaseVersionedEntity extends BaseAuditEntity {

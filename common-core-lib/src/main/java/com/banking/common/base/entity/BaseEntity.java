@@ -8,61 +8,57 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
+import org.hibernate.Hibernate;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.banking.common.annotation.audit.MaskingType;
-import com.banking.common.annotation.audit.SensitiveData;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import lombok.AccessLevel;
 
 /**
- * Base entity class providing common fields for all domain entities.
- * Includes ID, timestamps, and audit tracking capabilities.
+ * Base entity class providing common fields for all domain entities. Includes ID, timestamps, and
+ * audit tracking capabilities.
  * 
  * @author BaoND
  * @since 1.0.0
  */
 @Getter
-@Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity implements Serializable {
+public abstract class BaseEntity {
 
-    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
     private UUID id;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    @JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    @Setter(AccessLevel.NONE)
     private Instant createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    @Setter(AccessLevel.NONE)
     private Instant updatedAt;
 
-    @Column(name = "version")
+    @Column(name = "version", nullable = false)
     @Version
+    @Setter(AccessLevel.NONE)
     private Long version;
 
-    @Column(name = "deleted_at")
-    @SensitiveData(type = MaskingType.PARTIAL)
+    @Column(name = "deleted_at", nullable = true)
+    @Setter(AccessLevel.NONE)
     private Instant deletedAt;
 
     @Column(name = "deleted", nullable = false)
+    @Setter(AccessLevel.NONE)
     private boolean deleted = false;
 
     /**
@@ -72,6 +68,13 @@ public abstract class BaseEntity implements Serializable {
         this.deleted = true;
         this.deletedAt = Instant.now();
     }
+
+    /** Optional: restore */
+    public void restore() {
+        this.deleted = false;
+        this.deletedAt = null;
+    }
+
 
     /**
      * Checks if this entity is active (not deleted)
@@ -92,6 +95,6 @@ public abstract class BaseEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Hibernate.getClass(this).hashCode();
     }
 }
